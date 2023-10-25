@@ -1,0 +1,50 @@
+services:
+
+  php-apache:
+    image: php:8.1-apache
+    ports:
+      - 50080:80
+    volumes:  &appvolumes
+      - appdata:/var/www/html
+    build: .
+    networks:
+      - my-network
+  
+  db:
+    image: mariadb:11.1.2
+    ports:
+      - 53306:3306
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: true
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 
+      MYSQL_DATABASE: table
+    networks:
+      - my-network
+    hostname: mariadb
+
+  # to synchronize file on save with sftp
+  # TODO use host keys to avoid keys problem
+  openssh-server:
+    image: lscr.io/linuxserver/openssh-server:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK=000
+      - SUDO_ACCESS=true #optional
+      - PASSWORD_ACCESS=true #optional
+      - USER_PASSWORD=app #optional
+      - USER_NAME=app #optional
+    volumes: *appvolumes
+    ports:
+      - 50024:2222
+    restart: unless-stopped
+
+volumes:
+  db:
+  appdata:
+
+networks:
+  my-network:
