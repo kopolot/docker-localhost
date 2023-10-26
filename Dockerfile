@@ -5,5 +5,4 @@ RUN docker-php-ext-install mysqli; docker-php-ext-enable mysqli && apt update
 #cron
 RUN apt install -y cron && apt install -y nano
 COPY crontab /etc/cron.d/crontab
-RUN chmod 0644 /etc/cron.d/crontab; crontab /etc/cron.d/crontab
-CMD ["cron", "-f"]
+#RUN chmod 0644 /etc/cron.d/crontab; crontab /etc/cron.d/crontab
